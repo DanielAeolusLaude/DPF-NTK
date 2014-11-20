@@ -17,9 +17,9 @@
 #ifndef DGL_NTK_APP_HPP_INCLUDED
 #define DGL_NTK_APP_HPP_INCLUDED
 
-#include "../Base.hpp"
-#include "../../distrho/DistrhoUI.hpp"
-#include "../../distrho/extra/d_thread.hpp"
+#include "Base.hpp"
+#include "../distrho/DistrhoUI.hpp"
+#include "../distrho/extra/d_thread.hpp"
 
 #ifdef override
 # define override_defined
@@ -40,7 +40,7 @@
 // -----------------------------------------------------------------------
 
 namespace DISTRHO_NAMESPACE {
-    class UI;
+    class NtkUI;
 }
 
 struct FlScopedLock {
@@ -56,8 +56,8 @@ class NtkWindow;
 
 typedef DISTRHO_NAMESPACE::Mutex       d_Mutex;
 typedef DISTRHO_NAMESPACE::MutexLocker d_MutexLocker;
+typedef DISTRHO_NAMESPACE::NtkUI       d_NtkUI;
 typedef DISTRHO_NAMESPACE::Thread      d_Thread;
-typedef DISTRHO_NAMESPACE::UI          d_UI;
 
 // -----------------------------------------------------------------------
 
@@ -141,13 +141,13 @@ public:
       Create UI on our separate thread.
       Blocks until the UI is created and returns it.
     */
-    d_UI* createUI(void* const func)
+    d_NtkUI* createUI(void* const func)
     {
         DISTRHO_SAFE_ASSERT_RETURN(isThreadRunning(), nullptr);
         DISTRHO_SAFE_ASSERT_RETURN(! fDoNextUI, nullptr);
 
         fNextUI.create = true;
-        fNextUI.func   = (NextUI::UiFunc)func;
+        fNextUI.func   = (NextUI::NtkUiFunc)func;
         fDoNextUI      = true;
 
         if (isThreadRunning() && ! shouldThreadExit())
@@ -168,7 +168,7 @@ public:
       Delete UI on our separate thread.
       Blocks until the UI is deleted.
     */
-    void deleteUI(d_UI* const ui)
+    void deleteUI(d_NtkUI* const ui)
     {
         DISTRHO_SAFE_ASSERT_RETURN(! fDoNextUI,);
 
@@ -192,13 +192,13 @@ public:
 
 private:
     struct NextUI {
-        typedef d_UI* (*UiFunc)();
+        typedef d_NtkUI* (*NtkUiFunc)();
 
         bool create;
 
         union {
-            UiFunc func;
-            d_UI*  ui;
+            NtkUiFunc func;
+            d_NtkUI*  ui;
         };
 
         NextUI()

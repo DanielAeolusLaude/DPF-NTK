@@ -20,7 +20,7 @@
 #include "extra/d_leakdetector.hpp"
 #include "src/DistrhoPluginChecks.h"
 
-#include "../dgl/ntk/NtkWidget.hpp"
+#include "../dgl/NtkWidget.hpp"
 using DGL::NtkWidget;
 
 START_NAMESPACE_DISTRHO
@@ -155,7 +155,7 @@ private:
     // this should not be used
     void position(int, int) noexcept {}
 
-    DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(UI)
+    DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NtkUI)
 };
 
 /* ------------------------------------------------------------------------------------------------------------
@@ -164,7 +164,7 @@ private:
 /**
    TODO.
  */
-extern UI* createUI();
+extern NtkUI* createUI();
 
 // -----------------------------------------------------------------------------------------------------------
 

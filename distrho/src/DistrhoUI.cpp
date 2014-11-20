@@ -26,10 +26,10 @@ void*      d_lastUiDspPtr = nullptr;
 NtkWindow* d_lastUiWindow = nullptr;
 
 /* ------------------------------------------------------------------------------------------------------------
- * UI */
+ * NtkUI */
 
 NtkUI::NtkUI()
-    : UIWidget(*d_lastUiWindow),
+    : NtkWidget(*d_lastUiWindow),
       pData(new PrivateData()) {}
 
 NtkUI::~NtkUI()
@@ -89,7 +89,7 @@ void NtkUI::d_sampleRateChanged(double) {}
 
 void NtkUI::resize(int x, int y, int w, int h)
 {
-    UIWidget::resize(x, y, w, h);
+    NtkWidget::resize(x, y, w, h);
     pData->setSizeCallback(w, h);
 }
 

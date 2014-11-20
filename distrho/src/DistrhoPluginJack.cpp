@@ -108,8 +108,6 @@ public:
             fUI.setWindowTitle(name);
         else
             fUI.setWindowTitle(fPlugin.getName());
-
-        fUI.exec(this);
     }
 
     ~PluginJack()
@@ -143,10 +141,17 @@ public:
         jack_client_close(fClient);
     }
 
+    void exec()
+    {
+        fUI.setWindowVisible(true);
+
+        for (; idle();) { d_msleep(30); }
+    }
+
     // -------------------------------------------------------------------
 
 protected:
-    void idleCallback() override
+    bool idle()
     {
         float value;
 
@@ -164,7 +169,7 @@ protected:
             fUI.parameterChanged(i, value);
         }
 
-        fUI.exec_idle();
+        return fUI.idle();
     }
 
     void jackBufferSize(const jack_nframes_t nframes)
@@ -426,7 +431,8 @@ int main()
     d_lastSampleRate = jack_get_sample_rate(client);
     d_lastUiSampleRate = d_lastSampleRate;
 
-    const PluginJack p(client);
+    PluginJack p(client);
+    p.exec();
 
     return 0;
 }

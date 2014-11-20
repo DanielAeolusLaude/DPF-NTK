@@ -39,13 +39,13 @@ void NtkApp::NextUI::run()
     if (create)
     {
         d_stdout("Creating NTK UI in separate thread...");
-        d_UI* const ui2 = (func)();
+        d_NtkUI* const ui2 = (func)();
         ui = ui2;
     }
     else
     {
         d_stdout("Destroying NTK UI in separate thread...");
-        d_UI* const ui2 = ui;
+        d_NtkUI* const ui2 = ui;
         ui = nullptr;
         delete ui2;
     }

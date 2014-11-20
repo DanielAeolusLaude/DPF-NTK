@@ -34,7 +34,7 @@ extern void*      d_lastUiDspPtr;
 extern NtkWindow* d_lastUiWindow;
 
 // -----------------------------------------------------------------------
-// UI callbacks
+// NtkUI callbacks
 
 typedef void (*editParamFunc) (void* ptr, uint32_t rindex, bool started);
 typedef void (*setParamFunc)  (void* ptr, uint32_t rindex, float value);
@@ -43,9 +43,9 @@ typedef void (*sendNoteFunc)  (void* ptr, uint8_t channel, uint8_t note, uint8_t
 typedef void (*setSizeFunc)   (void* ptr, uint width, uint height);
 
 // -----------------------------------------------------------------------
-// UI private data
+// NtkUI private data
 
-struct UI::PrivateData {
+struct NtkUI::PrivateData {
     // DSP
     double   sampleRate;
     uint32_t parameterOffset;
@@ -128,13 +128,13 @@ struct UI::PrivateData {
 // createUiWrapper
 
 static inline
-UI* createUiWrapper(NtkApp& app, NtkWindow& window, void* const dspPtr)
+NtkUI* createUiWrapper(NtkApp& app, NtkWindow& window, void* const dspPtr)
 {
-    d_lastUiDspPtr = dspPtr;
-    d_lastUiWindow = &ntkWindow;
-    UI* const ret  = ntkApp.createUI((void*)createUI);
-    d_lastUiDspPtr = nullptr;
-    d_lastUiWindow = nullptr;
+    d_lastUiDspPtr   = dspPtr;
+    d_lastUiWindow   = &window;
+    NtkUI* const ret = app.createUI((void*)createUI);
+    d_lastUiDspPtr   = nullptr;
+    d_lastUiWindow   = nullptr;
     return ret;
 }
 
@@ -163,7 +163,7 @@ public:
         fData->setSizeCallbackFunc   = setSizeCall;
 
         // set window size
-        ntkWindow.resize(0, 0, fUI->getWidth(), fUI->getHeight());
+        ntkWindow.size(fUI->w(), fUI->h());
     }
 
     ~UIExporter()
@@ -174,27 +174,27 @@ public:
 
     // -------------------------------------------------------------------
 
-//     uint getWidth() const noexcept
-//     {
-//         return ntkWindow.getWidth();
-//     }
-// 
-//     uint getHeight() const noexcept
-//     {
-//         return ntkWindow.getHeight();
-//     }
-// 
-//     bool isVisible() const noexcept
-//     {
-//         return ntkWindow.isVisible();
-//     }
+    uint getWidth() const noexcept
+    {
+        return ntkWindow.w();
+    }
+
+    uint getHeight() const noexcept
+    {
+        return ntkWindow.h();
+    }
+
+    bool isVisible() const noexcept
+    {
+        return ntkWindow.visible();
+    }
 
     // -------------------------------------------------------------------
 
-//     intptr_t getWindowId() const noexcept
-//     {
-//         return ntkWindow.getWindowId();
-//     }
+    intptr_t getWindowId() const noexcept
+    {
+        return ntkWindow.getWindowId();
+    }
 
     // -------------------------------------------------------------------
 
@@ -248,7 +248,7 @@ public:
 
     void quit()
     {
-        ntkWindow.close();
+        ntkWindow.hide();
         ntkApp.quit();
     }
 
@@ -259,14 +259,14 @@ public:
         DISTRHO_SAFE_ASSERT_RETURN(fUI != nullptr,);
 
         if (updateUI)
-            fUI->setSize(width, height);
+            fUI->size(width, height);
 
-        ntkWindow.setSize(width, height);
+        ntkWindow.size(width, height);
     }
 
     void setWindowTitle(const char* const uiTitle)
     {
-        ntkWindow.setTitle(uiTitle);
+        ntkWindow.label(uiTitle);
     }
 
     void setWindowTransientWinId(const intptr_t winId)
@@ -276,7 +276,10 @@ public:
 
     bool setWindowVisible(const bool yesNo)
     {
-        ntkWindow.setVisible(yesNo);
+        if (yesNo)
+            ntkWindow.show();
+        else
+            ntkWindow.hide();
 
         return ! ntkApp.isQuiting();
     }
