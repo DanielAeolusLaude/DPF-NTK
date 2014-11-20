@@ -1,0 +1,9 @@
+[Project]
+Manager=KDevGenericManager
+Name=DPF-NTK
+
+[Filters]
+Excludes=*/.*,*/*~,*/*.a
+
+[Project]
+VersionControlSupport=kdevgit
